@@ -6,6 +6,19 @@
 #include <iostream>
 #include <fstream>
 
+#define sleep(x) Sleep(x)
+#include <windows.h>
+
+
+
+//#if defined(__WINDOWS__) 
+//#include <windows.h>
+//#define sleep(x) Sleep(x)
+//#elif defined(_linux_)
+//#include <unistd.h>
+//#define sleep(x) sleep(x)
+//#endif
+
 #define TRUE_WINSIZE 600
 #define WINSIZE 3000
 #define INF 9000
@@ -62,7 +75,7 @@ void read_off_data1(char* filename)
         face[i][1] = p2;
         face[i][2] = p3;
 	}
-    // print the data
+    /* print the data
     for(int i=0;i<vnum;i++)
     {
         cout << point[i][0] << "\t" << point[i][1] << "\t" << point[i][2] << endl;
@@ -72,13 +85,13 @@ void read_off_data1(char* filename)
     {
         cout << face[i][0] << "\t" << face[i][1] << "\t" << face[i][2] << endl;
     }
-
+	*/
 	return;
 }
 void drawaxis()
 {
 	gluLookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-	glRotatef(30, 1.0, 1.0, 1.0);
+	glRotatef(-45, 1.0, 1.0, 0.0);
 	glPointSize(5);
 	// z
 	glColor3f(1.0, 0.0, 0.0);
@@ -116,6 +129,7 @@ void drawaxis()
 
 	cout << "draw coordinate axis finished!" << endl;
 	glFlush();
+	glColor3f(255, 255, 255);
 }
 
 bool visiable(int i)
@@ -143,7 +157,7 @@ bool visiable(int i)
     double z = (matrix[1][0] - matrix[0][0]) * (matrix[2][1] - matrix[1][1]) - (matrix[1][1] - matrix[0][1]) * (matrix[2][0] - matrix[1][0]);
     double y = (matrix[1][2] - matrix[0][2]) * (matrix[2][0] - matrix[1][0]) - (matrix[1][0] - matrix[0][0]) * (matrix[2][2] - matrix[1][2]);
 
-    cout << x << "\t" << y << "\t" << z << endl;
+    //cout << x << "\t" << y << "\t" << z << endl;
 
     return true;
 }
@@ -154,11 +168,13 @@ void drawduck()
     for(int i=0;i<fnum;i++)
     {
         glBegin(GL_TRIANGLES);
+		/*
         cout << "face " << i << endl;
         cout << point[face[i][0]][0] << "\t" << point[face[i][0]][1] << "\t" << point[face[i][0]][2] << endl;
         cout << point[face[i][1]][0] << "\t" << point[face[i][1]][1] << "\t" << point[face[i][1]][2] << endl;
         cout << point[face[i][2]][0] << "\t" << point[face[i][2]][1] << "\t" << point[face[i][2]][2] << endl;
-        cout << "---------------------" << endl;
+		*/
+        // cout << "---------------------" << endl;
         if(visiable(i))
         {
             glVertex3i(point[face[i][0]][0], point[face[i][0]][1], point[face[i][0]][2]);
@@ -169,8 +185,10 @@ void drawduck()
 //      glVertex3i(1000*rand()%1001, 1000*rand()%1001, 1000*rand()%1001);
 //      glVertex3i(1000*rand()%1001, 1000*rand()%1001, 1000*rand()%1001);
         glEnd();
+		glFlush();
+		//sleep(10);
     }
-    glFlush();
+   
 
 	return;
 }
@@ -209,12 +227,28 @@ void reshape_duck(int w, int h)
 }
 void init_duck()
 {
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	//glClearColor(0.0, 0.0, 0.0, 0.0);
+	glEnable(GL_DEPTH_TEST);
+	GLfloat position[] = { TRUE_WINSIZE, TRUE_WINSIZE, TRUE_WINSIZE, 0.0 };
+	//GLfloat position[] = { WINSIZE, WINSIZE, WINSIZE, 0.0 };
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
+	GLfloat ambient[] = { 0.0, 0.0, 0.0, 1.0 };
+	GLfloat diffuse[] = {0.0, 0.5, 0.5, 1.0};
+	GLfloat specular[] = {1.0, 1.0, 1.0, 1.0};
+
+	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+	glMaterialf(GL_FRONT, GL_SHININESS, 20.0);
+
 	glShadeModel(GL_FLAT);
 }
 
 
-int main(int argc, char ** argv)
+int main_duck(int argc, char ** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
